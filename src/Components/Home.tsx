@@ -8,9 +8,10 @@ const { Content } = Layout;
 
 const Home = () => {
   const layoutContext = useContext(LayoutContext);
-  const [data, loading] = useFetch(
-    "https://jsonplaceholder.typicode.com/users"
-  );
+  const { data, loading } = layoutContext;
+  // useFetch(
+  //   "https://jsonplaceholder.typicode.com/users"
+  // );
   console.log("data", data, loading);
   return (
     // <Layout style={{ padding: '0 24px 24px' }} >

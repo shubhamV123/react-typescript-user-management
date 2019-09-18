@@ -3,8 +3,6 @@ import { Layout } from "antd";
 import { Link, withRouter, RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import LayoutContainer from "../Containers/LayoutContainer";
-// const { Header, Content, Footer, Sider } = Layout;
-// const { SubMenu } = Menu;
 
 const LayoutContext = React.createContext(null);
 
@@ -28,6 +26,86 @@ class LayoutProvider extends React.Component<LayoutProps, LayoutState> {
     data: [],
     isAuthenticated: JSON.parse(localStorage.getItem("isLoggedIn")) || false
   };
+  timerID;
+  componentDidMount() {
+    this.fetchUrl();
+    this.setTimeInterval();
+  }
+  setTimeInterval = () => {
+    this.timerID = setInterval(() => this.refreshStats(), 300000);
+  };
+
+  refreshStats() {
+    let oldBanData = JSON.parse(localStorage.getItem("banData")) || [];
+    let filterBanDataBasedOnUser = oldBanData.filter(
+      data =>
+        data.userType !== "admin" && data && data.expiry <= new Date().getTime()
+    );
+    if (filterBanDataBasedOnUser.length > 0) {
+      this.setState({ loading: true });
+      let updateLocalStorage = oldBanData
+        .map(data => {
+          if (data && data.expiry < new Date().getTime()) {
+            return null;
+          }
+          return data;
+        })
+        .filter(Boolean);
+      console.log(filterBanDataBasedOnUser);
+
+      const modifyData = this.state.data.map(oldData => {
+        const findExistingIndex = filterBanDataBasedOnUser.findIndex(
+          data => data.id === oldData.id
+        );
+        if (findExistingIndex !== -1) {
+          return {
+            ...oldData,
+            banUser: false,
+            expiry: null
+          };
+        }
+        return {
+          ...oldData
+        };
+      });
+      localStorage.setItem("banData", JSON.stringify(updateLocalStorage));
+      this.setState({ loading: false, data: modifyData });
+    } else {
+      clearInterval(this.timerID);
+    }
+  }
+
+  fetchUrl = async () => {
+    try {
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      const data = await response.data;
+      let oldBanData = JSON.parse(localStorage.getItem("banData")) || [];
+
+      const modifyData = data.map(oldData => {
+        const findExistingIndex = oldBanData.findIndex(
+          data => data.id === oldData.id
+        );
+        if (findExistingIndex !== -1) {
+          return {
+            ...oldData,
+            banUser: oldBanData[findExistingIndex].status,
+            userType: oldBanData[findExistingIndex].userType
+          };
+        }
+        return {
+          ...oldData,
+          banUser: false,
+          markTopUser: false,
+          userType: null
+        };
+      });
+      this.setState({ loading: false, data: modifyData });
+    } catch (e) {
+      this.setState({ ...this.state.data, loading: false });
+    }
+  };
 
   testSignIn = ({ type }) => {
     this.setState({ isAuthenticated: true }, () => {
@@ -37,10 +115,49 @@ class LayoutProvider extends React.Component<LayoutProps, LayoutState> {
     });
   };
   testSignOut = () => {
-    localStorage.clear();
-    // localStorage.setItem('isLoggedIn', JSON.stringify(false))
+    // localStorage.clear();
+    localStorage.removeItem("isLoggedIn");
     this.setState({ isAuthenticated: false });
   };
+  modifyData = (id, extraInfo) => {
+    let newData = this.state.data.map(data => {
+      if (data.id === id) {
+        return { ...data, ...extraInfo };
+      }
+      return data;
+    });
+    this.setState({ data: newData });
+  };
+  banUser = (checked, id, type) => {
+    if (type === "ban") {
+      let oldBanData = JSON.parse(localStorage.getItem("banData")) || [];
+      let accountType = localStorage.getItem("userType");
+      if (accountType === "user") {
+        this.setTimeInterval();
+      }
+      let objIndex = oldBanData.findIndex(obj => obj.id == id);
+      if (objIndex !== -1) {
+        oldBanData[objIndex].status = checked;
+      } else {
+        oldBanData.push({
+          id,
+          status: checked,
+          userType: accountType,
+          expiry: accountType === "admin" ? null : new Date().getTime()
+        });
+      }
+      this.modifyData(id, {
+        banUser: checked,
+        userType: localStorage.getItem("userType")
+      });
+      localStorage.setItem("banData", JSON.stringify(oldBanData));
+    }
+    console.log(checked, id, type, localStorage.getItem("userType"));
+  };
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
   render() {
     let isHomeActive = this.props.location.pathname === "/";
     let isContactActive = this.props.location.pathname === "/contact";
@@ -51,7 +168,8 @@ class LayoutProvider extends React.Component<LayoutProps, LayoutState> {
         value={{
           ...this.state,
           testSignIn: this.testSignIn,
-          testSignOut: this.testSignOut
+          testSignOut: this.testSignOut,
+          banUser: this.banUser
         }}
       >
         {Boolean(this.state.isAuthenticated) ? (
