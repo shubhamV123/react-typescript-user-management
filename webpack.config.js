@@ -7,7 +7,11 @@ module.exports = {
   //this is webpack going to bundle all assets
   output: {
     path: path.join(__dirname, "/dist"),
-    filename: "bundle.min.js"
+    filename: "bundle.min.js",
+    publicPath: "/"
+  },
+  devServer: {
+    historyApiFallback: true
   },
   resolve: {
     //Attempt to resolve these extensions in order.

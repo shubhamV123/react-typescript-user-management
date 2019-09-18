@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./styles/style.css";
-import Counter from "./components/Hello";
+import App from "./App";
 
-ReactDOM.render(<Counter />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
