@@ -1,6 +1,6 @@
 import { Layout, Menu } from "antd";
 import * as React from "react";
-
+import { Link } from "react-router-dom";
 const { Header, Content, Sider } = Layout;
 
 class SiderDemo extends React.Component<any, any> {
@@ -14,6 +14,7 @@ class SiderDemo extends React.Component<any, any> {
   };
 
   render() {
+    let { active } = this.props;
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <Header className="header">
@@ -21,11 +22,15 @@ class SiderDemo extends React.Component<any, any> {
           <Menu
             theme="dark"
             mode="horizontal"
-            defaultSelectedKeys={["2"]}
+            defaultSelectedKeys={[active]}
             style={{ lineHeight: "64px" }}
           >
-            <Menu.Item key="1">User</Menu.Item>
-            <Menu.Item key="2">Top User</Menu.Item>
+            <Menu.Item key="1">
+              <Link to="/user">User</Link>
+            </Menu.Item>
+            <Menu.Item key="2">
+              <Link to="/top-user">Top User</Link>
+            </Menu.Item>
           </Menu>
         </Header>
         <Layout>

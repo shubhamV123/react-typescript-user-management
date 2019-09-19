@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Result } from "antd";
 
-const NoResult = () => {
+const NoResult: React.FC<{}> = () => {
   return (
     <Result
       status="404"

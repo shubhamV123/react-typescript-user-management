@@ -1,18 +1,20 @@
 import * as React from "react";
-import { Table } from "antd";
+import { Table, Input, Row, Col } from "antd";
 import BlockUser from "./BlockUser";
 import MarkUserTop from "./MarkUserTop";
 import { LayoutContext } from "../../Provider/LayoutProvider";
 
 const { useContext } = React;
 
-const CustomTable = ({ loading, data }) => {
+interface CustomTableProps {
+  loading?: boolean;
+  data?: any;
+}
+const CustomTable: React.FC<CustomTableProps> = ({ loading, data }) => {
   const layoutContext = useContext(LayoutContext);
-  const { banUser } = layoutContext;
-  const handleOnChange = (checked, record, type) => {
-    console.log(record);
-    banUser(checked, record.id, type);
-    // console.log(`switch to ${checked} ${record}`);
+  const { toggleSwitch, searchUser } = layoutContext;
+  const handleOnChange = (checked: boolean, id: number, type: string) => {
+    toggleSwitch(checked, id, type);
   };
   const columns = [
     {
@@ -38,17 +40,20 @@ const CustomTable = ({ loading, data }) => {
     {
       title: "Ban User",
       key: "banuser",
-      render: (text, record) => {
+      render: (_: any, record: any) => {
         const disableAccessToNonAdmin =
           localStorage.getItem("userType") === "admin"
             ? false
             : record.userType === "admin" && record.banUser;
+
         return (
           <>
             <BlockUser
               active={record.banUser}
               disabled={disableAccessToNonAdmin}
-              handleOnChange={checked => handleOnChange(checked, record, "ban")}
+              handleOnChange={(checked: boolean) =>
+                handleOnChange(checked, record.id, "banUser")
+              }
             />
           </>
         );
@@ -60,13 +65,38 @@ const CustomTable = ({ loading, data }) => {
       render: (text, record) => (
         <>
           <MarkUserTop
-            handleOnChange={checked => handleOnChange(checked, record, "mark")}
+            active={record.markTopUser}
+            handleOnChange={(checked: boolean) =>
+              handleOnChange(checked, record.id, "markTopUser")
+            }
           />
         </>
       )
     }
   ];
-  return <Table loading={loading} columns={columns} dataSource={data} />;
+
+  return (
+    <>
+      <Row>
+        <Col span={8}>
+          {" "}
+          <Input
+            placeholder="Search with email or name"
+            allowClear
+            onChange={searchUser}
+          />
+        </Col>
+      </Row>
+
+      <Table
+        className={"custom-table"}
+        rowKey="name"
+        loading={loading}
+        columns={columns}
+        dataSource={data}
+      />
+    </>
+  );
 };
 
 export default CustomTable;

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Form, Icon, Input, Button, message, Row, Col } from "antd";
 import { LayoutContext } from "../Provider/LayoutProvider";
 const { useContext } = React;
-const LoginForm = (props: any) => {
+const LoginForm: React.FC<{}> = (props: any) => {
   const layoutContext = useContext(LayoutContext);
   const handleSubmit = e => {
     e.preventDefault();

@@ -10,20 +10,21 @@ const NoResult = lazy(() => import("./Components/NoResult"));
 const LoginForm = lazy(() => import("./Components/LoginForm"));
 const PrivateRoute = lazy(() => import("./Routes/PrivateRoute"));
 
-function App() {
+const App: React.FC<{}> = () => {
   return (
     <Router>
       <LayoutProvider>
         <Suspense fallback={<div>Loading...</div>}>
           <Switch>
             <Route exact path="/login" component={LoginForm} />
-            <PrivateRoute exact path="/" component={Home} />
+            <PrivateRoute path="/" component={Home} />
+            <PrivateRoute exact path="/top-user" component={Home} />
             <Route component={NoResult} />
           </Switch>
         </Suspense>
       </LayoutProvider>
     </Router>
   );
-}
+};
 
 export default App;

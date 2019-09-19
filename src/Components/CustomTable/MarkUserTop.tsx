@@ -1,10 +1,17 @@
 import * as React from "react";
 import { Switch } from "antd";
 
-const MarkUserTop = ({ handleOnChange }) => {
+interface MarkUserTopProps {
+  active?: boolean;
+  handleOnChange?: any;
+}
+const MarkUserTop: React.FC<MarkUserTopProps> = ({
+  handleOnChange,
+  active
+}) => {
   return (
     <div>
-      <Switch defaultChecked onChange={handleOnChange} />
+      <Switch checked={active} onChange={handleOnChange} />
     </div>
   );
 };

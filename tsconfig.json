@@ -9,9 +9,11 @@
     "allowSyntheticDefaultImports": false,
     "jsx": "react",
     "allowJs": true,
+    "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
       "components/*": ["src/Containers/*"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist"]
 }
