@@ -36,6 +36,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
     1.  Each enviornment should have its own webpack and typscipt config file
         1.Ex : webpack.config.prod.js,tsconfig.prod.json
-    2. More robust use of typescrip
-    3. In Development code works fine but in production it is not taking relative path so need to hashRouter so that it takes relative path
+        
+    2. More robust use of typescript
+    
+    3. In Development code works fine but in production it is not taking relative path so need to 
+    hashRouter so that it takes relative path
+    
     4. Layout context can be refined
